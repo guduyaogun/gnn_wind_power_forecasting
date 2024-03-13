@@ -56,11 +56,7 @@ def main():
     args.num_static_node_features = data[0].x.shape[1]
     train_data, test_data = temporal_signal_split(data, train_ratio=0.8)
 
-    model = model_dict[args.model].Model(
-        num_static_node_features=args.num_static_node_features,
-        num_timesteps_in=args.num_timesteps_in,
-        num_timesteps_out=args.num_timesteps_out
-    )
+    model = model_dict[args.model].Model(args)
     optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
     model.train()
 
@@ -72,7 +68,7 @@ def main():
             # Get model predictions
             y_hat = model(snapshot.x, snapshot.edge_index, snapshot.edge_attr)
             # Mean squared error
-            loss = loss + torch.mean((y_hat-snapshot.y)**2)
+            loss = loss + torch.mean((y_hat.squeeze()-snapshot.y)**2)
             step += 1
 
         loss = loss / (step + 1)
@@ -93,7 +89,7 @@ def main():
         # Get predictions
         y_hat = model(snapshot.x, snapshot.edge_index, snapshot.edge_attr)
         # Mean squared error
-        loss = loss + torch.mean((y_hat-snapshot.y)**2)
+        loss = loss + torch.mean((y_hat.squeeze()-snapshot.y)**2)
         # Store for analysis below
         predictions.append(y_hat)
         labels.append(snapshot.y)
