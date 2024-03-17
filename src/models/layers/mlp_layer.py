@@ -1,22 +1,22 @@
-from torch import nn
 import torch.nn.functional as F
+from torch import nn
 
 
 class MLPLayer(nn.Module):
     def __init__(
-            self,
-            input_size,
-            output_size,
-            dropout=0.05,
-            activation='relu',
-            norm_layer='layer'
-        ):
+        self,
+        input_size,
+        output_size,
+        dropout=0.05,
+        activation="relu",
+        norm_layer="layer",
+    ):
         super().__init__()
 
         self.hidden = nn.Linear(input_size, output_size)
-        if norm_layer == 'layer':
+        if norm_layer == "layer":
             self.norm = nn.LayerNorm(output_size)
-        elif norm_layer == 'batch':
+        elif norm_layer == "batch":
             self.norm = nn.BatchNorm1d(output_size)
         else:
             self.norm = None

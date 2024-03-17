@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def mae(y, y_hat):
     """
     Mean Absolute Error:
@@ -19,7 +20,7 @@ def mse(y, y_hat):
     - Interpretation has to be done with square factor in mind
     - Gives no information about direction of the error (over- or underestimation)
     """
-    return np.mean((y - y_hat)**2)
+    return np.mean((y - y_hat) ** 2)
 
 
 def rmse(y, y_hat):
@@ -30,10 +31,10 @@ def rmse(y, y_hat):
     - Smooth interpretation, as scale aligns with variable scale
     - Gives no information about direction of the error (over- or underestimation)
     """
-    return np.sqrt(np.mean((y - y_hat)**2))
+    return np.sqrt(np.mean((y - y_hat) ** 2))
 
 
-def nrmse(y, y_hat, normalizing_method = "range"):
+def nrmse(y, y_hat, normalizing_method="range"):
     """
     Normalized Root Mean Squared Error:
     - Differentiable, so good for optimization
@@ -42,9 +43,9 @@ def nrmse(y, y_hat, normalizing_method = "range"):
     - Gives no information about direction of the error (over- or underestimation)
     """
     if normalizing_method == "mean":
-        nrmse_res = np.sqrt(np.mean((y - y_hat)**2)) / (np.mean(y))
+        nrmse_res = np.sqrt(np.mean((y - y_hat) ** 2)) / (np.mean(y))
     else:
-        nrmse_res = np.sqrt(np.mean((y - y_hat)**2)) / (np.max(y) - np.min(y))
+        nrmse_res = np.sqrt(np.mean((y - y_hat) ** 2)) / (np.max(y) - np.min(y))
 
     return nrmse_res
 
@@ -79,4 +80,4 @@ def mspe(y, y_hat, use_eps=False):
     else:
         eps = 0
 
-    return np.mean(((y_hat - y) / (y + eps))**2)
+    return np.mean(((y_hat - y) / (y + eps)) ** 2)

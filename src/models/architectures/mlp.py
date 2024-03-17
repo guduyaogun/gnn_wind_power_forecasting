@@ -3,7 +3,7 @@ from torch import nn
 from src.models.layers.mlp_layer import MLPLayer
 
 
-class Model(nn.Module): #pylint: disable=too-many-instance-attributes
+class Model(nn.Module):
     def __init__(self, args):
         super().__init__()
         self.num_timesteps_in = args.num_timesteps_in
@@ -14,25 +14,27 @@ class Model(nn.Module): #pylint: disable=too-many-instance-attributes
         self.layers = 2
         self.output_attention = False
         self.dropout = 0.05
-        self.activation = 'gelu'
+        self.activation = "gelu"
 
         # Encoder
         self.mlp = nn.ModuleList(
             [
                 MLPLayer(
-                    input_size=self.d_model if i != 0 else (self.num_static_node_features * self.num_timesteps_in),
+                    input_size=(
+                        self.d_model
+                        if i != 0
+                        else (self.num_static_node_features * self.num_timesteps_in)
+                    ),
                     output_size=self.d_model,
                     dropout=self.dropout,
                     activation=self.activation,
-                    norm_layer='layer'
+                    norm_layer="layer",
                 )
                 for i in range(self.layers)
             ]
         )
         self.projection = nn.Linear(
-            self.d_model,
-            (self.output_features * self.num_timesteps_out),
-            bias=True
+            self.d_model, (self.output_features * self.num_timesteps_out), bias=True
         )
 
     def forward(self, x, *_, **__):
@@ -48,7 +50,9 @@ class Model(nn.Module): #pylint: disable=too-many-instance-attributes
         outputs = self.projection(outputs)
 
         # Reshape to correct output
-        outputs = outputs.view(outputs.shape[0], self.num_timesteps_out, self.output_features)
+        outputs = outputs.view(
+            outputs.shape[0], self.num_timesteps_out, self.output_features
+        )
 
         if self.output_attention:
             return outputs, None

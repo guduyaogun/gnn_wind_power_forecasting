@@ -15,17 +15,18 @@ class DataLoader:
         self.targets = []
         self._read_data()
 
-
     def _read_data(self):
 
-        edge_index = np.load('data/processed/kelmarsh/edge_index.npy')
-        edge_attr = np.load('data/processed/kelmarsh/edge_attr.npy')
-        X = np.load('data/processed/kelmarsh/x.npy')
+        edge_index = np.load("data/processed/kelmarsh/edge_index.npy")
+        edge_attr = np.load("data/processed/kelmarsh/edge_attr.npy")
+        X = np.load("data/processed/kelmarsh/x.npy")
 
         self.edge_index = torch.tensor(edge_index, dtype=torch.long)
 
         # Scale edge weights between 0 and 1
-        edge_attr = (edge_attr - np.min(edge_attr)) / (np.max(edge_attr) - np.min(edge_attr))
+        edge_attr = (edge_attr - np.min(edge_attr)) / (
+            np.max(edge_attr) - np.min(edge_attr)
+        )
         self.edge_attr = torch.tensor(edge_attr, dtype=torch.float)
 
         # Normalise X with z-score method
@@ -34,7 +35,6 @@ class DataLoader:
         stds = np.std(X, axis=(0, 2))
         X = X / stds.reshape(1, -1, 1)
         self.X = torch.tensor(X, dtype=torch.float)
-
 
     def _generate_task(self, num_timesteps_in: int = 12, num_timesteps_out: int = 12):
         """Uses the node features of the graph and generates a feature/target
