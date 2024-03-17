@@ -2,6 +2,30 @@
 
 In this project, we develop physics-induced graph neural networks for spatio-temporal, probabilistic wind power forecasting. The newly developed methods will be benchmarked against other state-of-the-art forecasting models. For details on the research plan, you can find a written research proposal [here](https://github.com/ber0i/gnn_wind_power_forecasting/research_plan/research_proposal.pdf).
 
+## Getting Started
+
+### Installing Dependencies
+
+To install the project's dependencies, create a new conda environment, activate it, and first run
+
+```
+conda install pip
+```
+
+Then, in the project folder root, run
+
+```
+pip install -r requirements.txt
+```
+
+Due to some conflicting package dependencis, we recommend to then run separately
+
+```
+pip install torch-geometric-temporal --no-deps
+```
+
+### Running a Model
+
 ## Data
 
 The dataset used here is 10min Supervisory Control and Data Acquisition (SCADA) data from the six wind turbines at the Kelmarsh wind farm [[1]](#1).
