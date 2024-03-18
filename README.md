@@ -1,6 +1,6 @@
 # Physics-Induced Graph Neural Network for Probabilistic Spatio-Temporal Forecasting of Wind Power
 
-In this project, we develop physics-induced graph neural networks for spatio-temporal, probabilistic wind power forecasting. The newly developed methods will be benchmarked against other state-of-the-art forecasting models. For details on the research plan, you can find a written research proposal [here](https://github.com/ber0i/gnn_wind_power_forecasting/research_plan/research_proposal.pdf).
+In this project, we develop physics-induced graph neural networks for spatio-temporal, probabilistic wind power forecasting. The newly developed methods will be benchmarked against other state-of-the-art forecasting models.
 
 ## Getting Started
 
