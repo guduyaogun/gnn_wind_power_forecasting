@@ -1,4 +1,6 @@
+geopandas
 jupyter
+openpyxl
 pandas
 seaborn
 torch
