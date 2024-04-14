@@ -31,7 +31,7 @@ pip install torch-geometric-temporal --no-deps
 The datasets used here are
 
 - 10min Supervisory Control and Data Acquisition (SCADA) data from the six wind turbines at the Kelmarsh wind farm [[1]](#1), available under a Creative Commons Attribution 4.0 International license, and
-- 5min SCADA data from 2010 to 2023 for 75 Australian wind farms, retrieved from the Nemweb archive from AEMO [[2]](#2), which is free to use for any purpose, when accurately and appropriately attributing AEMO as the author, see the [AEMO Copyright Permissions](https://www.aemo.com.au/energy-systems/electricity/national-electricity-market-nem/data-nem/market-data-nemweb).
+- 5min SCADA data from 2022 to 2023 for 67 Australian wind farms, retrieved from the Nemweb archive from AEMO [[2]](#2), which is free to use for any purpose, when accurately and appropriately attributing AEMO as the author, see the [AEMO Copyright Permissions](https://www.aemo.com.au/energy-systems/electricity/national-electricity-market-nem/data-nem/market-data-nemweb).
 
 ## Acknowledgment
 
