@@ -30,6 +30,14 @@ In PyTorch Geometric Temporal, there is currently a bug described in [this issue
 
 ### Running a Model
 
+To train a model, go to the project root and run
+```
+python run.py
+```
+
+You can optionally specify the following parameters:
+- data
+
 ## Data
 
 The datasets used here are
