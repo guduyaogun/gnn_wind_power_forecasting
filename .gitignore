@@ -3,5 +3,6 @@ playground.py
 playground.ipynb 
 .ipynb_checkpoints
 .vscode
+.flake8
 wandb
 data/raw

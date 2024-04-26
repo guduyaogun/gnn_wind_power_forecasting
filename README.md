@@ -6,7 +6,9 @@ In this project, we develop physics-induced graph neural networks for spatio-tem
 
 ### Installing Dependencies
 
-To install the project's dependencies, create a new conda environment, activate it, and first run
+Some dependencies require Microsoft Visual C++ 14.0, so make sure to have this installed on your machine first.
+
+To then install the project's dependencies, create a new conda environment, activate it, and first run
 
 ```
 conda install pip
@@ -23,6 +25,8 @@ Due to some conflicting package dependencis, we recommend to then run separately
 ```
 pip install torch-geometric-temporal --no-deps
 ```
+
+In PyTorch Geometric Temporal, there is currently a bug described in [this issue](https://github.com/benedekrozemberczki/pytorch_geometric_temporal/issues/267), which must be fixed manually in the package file `tsagcn.py`.
 
 ### Running a Model
 
