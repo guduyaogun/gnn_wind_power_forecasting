@@ -84,7 +84,7 @@ def main():
     optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
     model.train()
 
-    if args.usewandb:
+    if args.use_wandb:
         wandb.init(
             project="wandb-test-2",
             config={
@@ -119,7 +119,7 @@ def main():
         optimizer.step()
         optimizer.zero_grad()
         print(f"Epoch {epoch} train MSE: {loss.item():.4f}")
-        if args.usewandb:
+        if args.use_wandb:
             metrics = {"train_mse": loss.item()}
             wandb.log(metrics)
 
@@ -141,11 +141,11 @@ def main():
         loss = loss / (step + 1)
         loss = loss.item()
         print(f"Epoch {epoch} test MSE: {loss:.4f}")
-        if args.usewandb:
+        if args.use_wandb:
             metrics = {"test_mse": loss}
             wandb.log(metrics)
 
-    if args.usewandb:
+    if args.use_wandb:
         wandb.finish()
 
     model.eval()
