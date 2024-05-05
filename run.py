@@ -10,6 +10,7 @@ from src.data.dataloaders import aemo, kelmarsh
 from src.models.architectures import mlp, temporal_gnn
 
 
+# TODO: Write tests for all parameter choices
 def main():
     fix_seed = 42
     random.seed(fix_seed)
@@ -86,7 +87,7 @@ def main():
 
     if args.use_wandb:
         wandb.init(
-            project="wandb-test-2",
+            project=args.wandb_project_name,
             config={
                 "model": args.model,
                 "data": args.data,
@@ -97,9 +98,11 @@ def main():
         )
 
     print(">>>>Start Training>>>>")
+    # TODO: De-hardcode n_epochs
     for epoch in range(10):
         loss = 0
         step = 0
+        # TODO: De-hardcode n_traindata
         for snapshot in train_data[:1000]:
             # Get model predictions
             if len(snapshot.x.shape) > 2:
@@ -130,7 +133,14 @@ def main():
 
         for snapshot in test_data:
             # Get predictions
-            y_hat = model(snapshot.x, snapshot.edge_index, snapshot.edge_attr)
+            if len(snapshot.x.shape) > 2:
+                y_hat = model(snapshot.x, snapshot.edge_index, snapshot.edge_attr)
+            else:
+                y_hat = model(
+                    snapshot.x.reshape(snapshot.x.shape[0], 1, snapshot.x.shape[1]),
+                    snapshot.edge_index,
+                    snapshot.edge_attr,
+                )
             # Mean squared error
             loss = loss + torch.mean((y_hat.squeeze() - snapshot.y) ** 2)
 
@@ -156,7 +166,14 @@ def main():
     print(">>>>Testing>>>>")
     for snapshot in test_data:
         # Get predictions
-        y_hat = model(snapshot.x, snapshot.edge_index, snapshot.edge_attr)
+        if len(snapshot.x.shape) > 2:
+            y_hat = model(snapshot.x, snapshot.edge_index, snapshot.edge_attr)
+        else:
+            y_hat = model(
+                snapshot.x.reshape(snapshot.x.shape[0], 1, snapshot.x.shape[1]),
+                snapshot.edge_index,
+                snapshot.edge_attr,
+            )
         # Mean squared error
         loss = loss + torch.mean((y_hat.squeeze() - snapshot.y) ** 2)
 
