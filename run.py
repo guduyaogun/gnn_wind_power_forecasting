@@ -7,7 +7,7 @@ from torch_geometric_temporal.signal import temporal_signal_split
 
 import wandb
 from src.data.dataloaders import aemo, kelmarsh
-from src.models.architectures import mlp, temporal_gnn
+from src.models.architectures import mlp, temporal_gnn, tgcn
 
 
 # TODO: Write tests for all parameter choices
@@ -34,7 +34,7 @@ def main():
         "--model",
         type=str,
         default="mlp",
-        help="model to use, options: [mlp, temporal_gnn], default: mlp",
+        help="model to use, options: [mlp, temporal_gnn, tgcn], default: mlp",
     )
     parser.add_argument(
         "--num_timesteps_in",
@@ -65,6 +65,7 @@ def main():
     model_dict = {
         "mlp": mlp,
         "temporal_gnn": temporal_gnn,
+        "tgcn": tgcn,
     }
 
     data_dict = {"kelmarsh": kelmarsh, "aemo": aemo}
@@ -78,6 +79,8 @@ def main():
         args.num_static_node_features = data[0].x.shape[1]
     else:
         args.num_static_node_features = 1
+
+    # TODO: Throw error if model == tgcn and num_static_node_features > 1 (not supported)
 
     train_data, test_data = temporal_signal_split(data, train_ratio=0.8)
 
@@ -102,17 +105,24 @@ def main():
     for epoch in range(10):
         loss = 0
         step = 0
+        hidden_state = None
         # TODO: De-hardcode n_traindata
         for snapshot in train_data[:1000]:
-            # Get model predictions
-            if len(snapshot.x.shape) > 2:
-                y_hat = model(snapshot.x, snapshot.edge_index, snapshot.edge_attr)
+
+            # Get right shape for node feature input
+            if len(snapshot.x.shape) > 2 or args.model == "tgcn":
+                x = snapshot.x
             else:
-                y_hat = model(
-                    snapshot.x.reshape(snapshot.x.shape[0], 1, snapshot.x.shape[1]),
-                    snapshot.edge_index,
-                    snapshot.edge_attr,
+                x = snapshot.x.reshape(snapshot.x.shape[0], 1, snapshot.x.shape[1])
+
+            # Get model predictions
+            if args.model == "tgcn":
+                y_hat, hidden_state = model(
+                    x, snapshot.edge_index, snapshot.edge_attr, hidden_state
                 )
+            else:
+                y_hat = model(x, snapshot.edge_index, snapshot.edge_attr)
+
             # Mean squared error
             loss = loss + torch.mean((y_hat.squeeze() - snapshot.y) ** 2)
             step += 1
@@ -129,18 +139,25 @@ def main():
         model.eval()
         loss = 0
         step = 0
+        hidden_state = None
         horizon = 100
 
         for snapshot in test_data:
-            # Get predictions
-            if len(snapshot.x.shape) > 2:
-                y_hat = model(snapshot.x, snapshot.edge_index, snapshot.edge_attr)
+
+            # Get right shape for node feature input
+            if len(snapshot.x.shape) > 2 or args.model == "tgcn":
+                x = snapshot.x
             else:
-                y_hat = model(
-                    snapshot.x.reshape(snapshot.x.shape[0], 1, snapshot.x.shape[1]),
-                    snapshot.edge_index,
-                    snapshot.edge_attr,
+                x = snapshot.x.reshape(snapshot.x.shape[0], 1, snapshot.x.shape[1])
+
+            # Get predictions
+            if args.model == "tgcn":
+                y_hat, hidden_state = model(
+                    x, snapshot.edge_index, snapshot.edge_attr, hidden_state
                 )
+            else:
+                y_hat = model(x, snapshot.edge_index, snapshot.edge_attr)
+
             # Mean squared error
             loss = loss + torch.mean((y_hat.squeeze() - snapshot.y) ** 2)
 
@@ -157,33 +174,6 @@ def main():
 
     if args.use_wandb:
         wandb.finish()
-
-    model.eval()
-    loss = 0
-    step = 0
-    horizon = 100
-
-    print(">>>>Testing>>>>")
-    for snapshot in test_data:
-        # Get predictions
-        if len(snapshot.x.shape) > 2:
-            y_hat = model(snapshot.x, snapshot.edge_index, snapshot.edge_attr)
-        else:
-            y_hat = model(
-                snapshot.x.reshape(snapshot.x.shape[0], 1, snapshot.x.shape[1]),
-                snapshot.edge_index,
-                snapshot.edge_attr,
-            )
-        # Mean squared error
-        loss = loss + torch.mean((y_hat.squeeze() - snapshot.y) ** 2)
-
-        step += 1
-        if step > horizon:
-            break
-
-    loss = loss / (step + 1)
-    loss = loss.item()
-    print(f"Test MSE: {loss:.4f}")
 
 
 if __name__ == "__main__":
