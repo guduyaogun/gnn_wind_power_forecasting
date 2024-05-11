@@ -31,6 +31,12 @@ def main():
         help="dataset to use, options: [aemo, kelmarsh], default: kelmarsh",
     )
     parser.add_argument(
+        "--device",
+        type=str,
+        default="cpu",
+        help="torch device, options: [cpu, cuda], default: cpu",
+    )
+    parser.add_argument(
         "--model",
         type=str,
         default="mlp",
@@ -85,6 +91,7 @@ def main():
     train_data, test_data = temporal_signal_split(data, train_ratio=0.8)
 
     model = model_dict[args.model].Model(args)
+    model.to(device=args.device)
     optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
     model.train()
 
@@ -115,25 +122,28 @@ def main():
             else:
                 x = snapshot.x.reshape(snapshot.x.shape[0], 1, snapshot.x.shape[1])
 
+            x = x.to(device=args.device)
+            edge_index = snapshot.edge_index.to(device=args.device)
+            edge_attr = snapshot.edge_attr.to(device=args.device)
+            y = snapshot.y.to(device=args.device)
             # Get model predictions
             if args.model == "tgcn":
-                y_hat, hidden_state = model(
-                    x, snapshot.edge_index, snapshot.edge_attr, hidden_state
-                )
+                y_hat, hidden_state = model(x, edge_index, edge_attr, hidden_state)
             else:
-                y_hat = model(x, snapshot.edge_index, snapshot.edge_attr)
+                y_hat = model(x, edge_index, edge_attr)
 
             # Mean squared error
-            loss = loss + torch.mean((y_hat.squeeze() - snapshot.y) ** 2)
+            loss = loss + torch.mean((y_hat.squeeze() - y) ** 2)
             step += 1
 
         loss = loss / (step + 1)
         loss.backward()
         optimizer.step()
         optimizer.zero_grad()
-        print(f"Epoch {epoch} train MSE: {loss.item():.4f}")
+        loss = loss.cpu().item()
+        print(f"Epoch {epoch} train MSE: {loss:.4f}")
         if args.use_wandb:
-            metrics = {"train_mse": loss.item()}
+            metrics = {"train_mse": loss}
             wandb.log(metrics)
 
         model.eval()
@@ -150,23 +160,25 @@ def main():
             else:
                 x = snapshot.x.reshape(snapshot.x.shape[0], 1, snapshot.x.shape[1])
 
+            x = x.to(device=args.device)
+            edge_index = snapshot.edge_index.to(device=args.device)
+            edge_attr = snapshot.edge_attr.to(device=args.device)
+            y = snapshot.y.to(device=args.device)
             # Get predictions
             if args.model == "tgcn":
-                y_hat, hidden_state = model(
-                    x, snapshot.edge_index, snapshot.edge_attr, hidden_state
-                )
+                y_hat, hidden_state = model(x, edge_index, edge_attr, hidden_state)
             else:
-                y_hat = model(x, snapshot.edge_index, snapshot.edge_attr)
+                y_hat = model(x, edge_index, edge_attr)
 
             # Mean squared error
-            loss = loss + torch.mean((y_hat.squeeze() - snapshot.y) ** 2)
+            loss = loss + torch.mean((y_hat.squeeze() - y) ** 2)
 
             step += 1
             if step > horizon:
                 break
 
         loss = loss / (step + 1)
-        loss = loss.item()
+        loss = loss.cpu().item()
         print(f"Epoch {epoch} test MSE: {loss:.4f}")
         if args.use_wandb:
             metrics = {"test_mse": loss}

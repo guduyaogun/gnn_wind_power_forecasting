@@ -38,6 +38,7 @@ python run.py
 You can optionally specify the parameters below. If not specified, the parameter's default will be used.
 - `--correlation_threshold`: correlation threshold of when to connect wind sites with an edge in the input graph, options [05, 06, 07, 08, 09], default: 08.
 - `--data`: dataset to use, options: [aemo, kelmarsh], default: kelmarsh.
+- `--device`: torch device, options: [cpu, cuda], default: cpu.
 - `--model`: model to use, options: [mlp, temporal_gnn, tgcn], default: mlp.
 - `--num_timesteps_in`: length (number of consecutive data points) of the look back window, default: 12.
 - `--num_timesteps_in`: number of consecutive data points to predict, default: 12.
