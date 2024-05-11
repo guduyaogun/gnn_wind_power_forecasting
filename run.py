@@ -127,7 +127,7 @@ def main():
         step = 0
         hidden_state = None
         for snapshot in train_data[
-            : train_data.snapshot_count * args.train_data_amount / 100
+            : round(train_data.snapshot_count * args.train_data_amount / 100)
         ]:
 
             # Get right shape for node feature input
