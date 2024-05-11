@@ -1,5 +1,6 @@
 import argparse
 import random
+import time
 
 import numpy as np
 import torch
@@ -43,6 +44,12 @@ def main():
         help="model to use, options: [mlp, temporal_gnn, tgcn], default: mlp",
     )
     parser.add_argument(
+        "--num_epochs",
+        type=int,
+        default=10,
+        help="number of epochs, default: 10",
+    )
+    parser.add_argument(
         "--num_timesteps_in",
         type=int,
         default=12,
@@ -53,6 +60,12 @@ def main():
         type=int,
         default=12,
         help="number of consecutive data points to predict, default: 12",
+    )
+    parser.add_argument(
+        "--train_data_amount",
+        type=int,
+        default="10",
+        help="percentage of training data to use for training, options: integer between 1 and 100, default: 10",
     )
     parser.add_argument(
         "--use_wandb",
@@ -108,13 +121,14 @@ def main():
         )
 
     print(">>>>Start Training>>>>")
-    # TODO: De-hardcode n_epochs
-    for epoch in range(10):
+    start_time = time.time()
+    for epoch in range(args.num_epochs):
         loss = 0
         step = 0
         hidden_state = None
-        # TODO: De-hardcode n_traindata
-        for snapshot in train_data[:1000]:
+        for snapshot in train_data[
+            : train_data.snapshot_count * args.train_data_amount / 100
+        ]:
 
             # Get right shape for node feature input
             if len(snapshot.x.shape) > 2 or args.model == "tgcn":
@@ -184,6 +198,9 @@ def main():
             metrics = {"test_mse": loss}
             wandb.log(metrics)
 
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print(f"Training time: {elapsed_time}")
     if args.use_wandb:
         wandb.finish()
 

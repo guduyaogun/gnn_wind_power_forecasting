@@ -40,8 +40,10 @@ You can optionally specify the parameters below. If not specified, the parameter
 - `--data`: dataset to use, options: [aemo, kelmarsh], default: kelmarsh.
 - `--device`: torch device, options: [cpu, cuda], default: cpu.
 - `--model`: model to use, options: [mlp, temporal_gnn, tgcn], default: mlp.
+- `--num_epochs`: number of epochs, default: 10.
 - `--num_timesteps_in`: length (number of consecutive data points) of the look back window, default: 12.
 - `--num_timesteps_in`: number of consecutive data points to predict, default: 12.
+- `--train_data_amount`: percentage of training data to use for training, options: integer between 1 and 100, default: 10.
 - `--use_wandb`: whether to track experiment in Weights & Biases, see https://wandb.ai/site, default: False.
 - `--wandb_project_name`: name of Weights & Biases project to initialize, default: sulphur-crested-cockatoo.
 

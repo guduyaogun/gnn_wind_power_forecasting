@@ -17,11 +17,9 @@ class DataLoader:
 
     def _read_data(self):
 
-        edge_index = np.load(
-            "data/processed/kelmarsh/edge_index.npy", allow_pickle=True
-        )
-        edge_attr = np.load("data/processed/kelmarsh/edge_attr.npy", allow_pickle=True)
-        X = np.load("data/processed/kelmarsh/x.npy", allow_pickle=True)
+        edge_index = np.load("data/processed/kelmarsh/edge_index.npy")
+        edge_attr = np.load("data/processed/kelmarsh/edge_attr.npy")
+        X = np.load("data/processed/kelmarsh/x.npy")
 
         self.edge_index = torch.tensor(edge_index, dtype=torch.long)
 

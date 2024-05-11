@@ -19,13 +19,11 @@ class DataLoader:
 
         edge_index = np.load(
             f"data/processed/aemo/edge_index_{self.correlation_treshold}.npy",
-            allow_pickle=True,
         )
         edge_attr = np.load(
             f"data/processed/aemo/edge_attr_{self.correlation_treshold}.npy",
-            allow_pickle=True,
         )
-        X = np.load("data/processed/aemo/x.npy", allow_pickle=True)
+        X = np.load("data/processed/aemo/x.npy")
 
         self.edge_index = torch.tensor(edge_index, dtype=torch.long)
 
